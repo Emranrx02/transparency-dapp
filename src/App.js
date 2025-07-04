@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import KYCForm from "./KYCForm";
 import TransactionHistory from "./TransactionHistory";
+import KYCForm from "./KYCForm";
 
 function App() {
   const [account, setAccount] = useState("");
@@ -10,6 +10,7 @@ function App() {
   const [donationAmount, setDonationAmount] = useState("");
   const [donationBalance, setDonationBalance] = useState("");
 
+  // Connect Wallet
   async function connectWallet() {
     if (window.ethereum) {
       const [selectedAccount] = await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -19,6 +20,19 @@ function App() {
     }
   }
 
+  // Disconnect Wallet
+  function disconnectWallet() {
+    setAccount("");
+    setResolvedAddress("");
+    setDonationBalance("");
+  }
+
+  // Change Wallet (Re-connect)
+  async function changeWallet() {
+    await connectWallet();
+  }
+
+  // ENS Resolve
   async function resolveENS() {
     console.log("ENS Name Resolving:", ensName);
 
@@ -37,8 +51,7 @@ function App() {
     }
 
     setResolvedAddress(address);
-
-    alert(`✅ You are connected to ENS.\n🔒 This address is trusted and verified on Ethereum. No one can change it.\n\nResolved Address:\n${address}`);
+    alert(`✅ You are connected to ENS.\n🔒 This address is trusted.\n\nResolved Address:\n${address}`);
   }
 
   const contractAddress = "0xAcDF97aAD93CF81f8a85E732E982e889F73364C2";
@@ -48,6 +61,7 @@ function App() {
     "function getDonation(address donor) view returns (uint256)"
   ];
 
+  // Donate ETH
   async function donate() {
     if (!donationAmount) {
       alert("Please enter an amount.");
@@ -64,12 +78,10 @@ function App() {
     alert(`Donation of ${donationAmount} ETH successful!`);
   }
 
+  // Get Donation Balance
   async function getBalance() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const contract = new ethers.Contract(contractAddress, contractABI, provider);
-
-    console.log("Checking donation for:", account);
-
     const balance = await contract.getDonation(account);
     setDonationBalance(ethers.utils.formatEther(balance));
   }
@@ -79,9 +91,8 @@ function App() {
       style={{
         minHeight: "100vh",
         display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
         flexDirection: "column",
+        alignItems: "center",
         background: "linear-gradient(270deg, rgb(36,203,147), rgb(26,200,151))",
         backgroundSize: "400% 400%",
         animation: "gradientBG 15s ease infinite",
@@ -92,7 +103,7 @@ function App() {
       }}
     >
       <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>
-        Welcome to Transparency World – Make the World Via Blockchain
+        Welcome to Transparency World 🌟
       </h1>
 
       <h2 style={{ marginBottom: "1rem" }}>Donation DApp</h2>
@@ -117,7 +128,36 @@ function App() {
         <>
           <p><strong>Connected:</strong> {account}</p>
 
-          <div style={{ margin: "10px 0" }}>
+          <div style={{ marginTop: "10px" }}>
+            <button
+              onClick={disconnectWallet}
+              style={{
+                padding: "8px 12px",
+                backgroundColor: "#f44336",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                marginRight: "8px"
+              }}>
+              Disconnect Wallet
+            </button>
+
+            <button
+              onClick={changeWallet}
+              style={{
+                padding: "8px 12px",
+                backgroundColor: "#3f51b5",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer"
+              }}>
+              Change Wallet
+            </button>
+          </div>
+
+          <div style={{ margin: "20px 0" }}>
             <input
               type="text"
               placeholder="Enter ENS name (e.g., vitalik.eth)"
@@ -209,10 +249,7 @@ function App() {
         }
       `}</style>
 
-      {/* Transaction History */}
       <TransactionHistory />
-
-      {/* KYC Form */}
       <KYCForm />
     </div>
   );
