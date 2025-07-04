@@ -40,15 +40,16 @@ function TransactionHistory() {
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "800px", margin: "auto" }}>
+    <div style={{ padding: "1rem", maxWidth: "500px", margin: "auto" }}>
       <h2>Transaction History</h2>
       <input
         type="text"
         placeholder="Enter Ethereum Address"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
-        style={{ width: "60%", padding: "8px", marginRight: "8px" }}
+        style={{ width: "100%", padding: "10px", marginRight: "8px" }}
       />
+
       <button
         onClick={fetchTransactions}
         style={{
@@ -58,6 +59,7 @@ function TransactionHistory() {
           border: "none",
           cursor: "pointer"
         }}
+        
       >
         Fetch History
       </button>

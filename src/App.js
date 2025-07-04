@@ -1,65 +1,77 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import TransactionHistory from "./TransactionHistory";
-import KYCForm from "./KYCForm";
+import RoleSelector from "./components/RoleSelector";
+import WalletManager from "./components/WalletManager";
+import ENSResolver from "./components/ENSResolver";
+import DonationSection from "./components/DonationSection";
+import TransactionHistory from "./components/TransactionHistory";
+import KYCSection from "./components/KYCSection";
 
 function App() {
+  const [userRole, setUserRole] = useState(""); // "needy" or "donor"
   const [account, setAccount] = useState("");
   const [ensName, setEnsName] = useState("");
-  const [resolvedAddress, setResolvedAddress] = useState("");
+  const [ensSearchName, setEnsSearchName] = useState("");
+  const [ensSearchResult, setEnsSearchResult] = useState("");
+  const [showKYC, setShowKYC] = useState(false);
   const [donationAmount, setDonationAmount] = useState("");
   const [donationBalance, setDonationBalance] = useState("");
+
+  const contractAddress = "0xAcDF97aAD93CF81f8a85E732E982e889F73364C2";
+  const contractABI = [
+    "function donate() public payable",
+    "function getDonation(address donor) view returns (uint256)"
+  ];
 
   // Connect Wallet
   async function connectWallet() {
     if (window.ethereum) {
-      const [selectedAccount] = await window.ethereum.request({ method: "eth_requestAccounts" });
+      const [selectedAccount] = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
       setAccount(selectedAccount);
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const ens = await provider.lookupAddress(selectedAccount);
+      setEnsName(ens || "");
     } else {
       alert("Please install MetaMask!");
     }
   }
 
-  // Disconnect Wallet
+  // Disconnect
   function disconnectWallet() {
     setAccount("");
-    setResolvedAddress("");
+    setEnsName("");
+    setEnsSearchName("");
+    setEnsSearchResult("");
+    setDonationAmount("");
     setDonationBalance("");
+    setShowKYC(false);
+    setUserRole("");
   }
 
-  // Change Wallet (Re-connect)
+  // Change Wallet
   async function changeWallet() {
     await connectWallet();
   }
 
-  // ENS Resolve
-  async function resolveENS() {
-    console.log("ENS Name Resolving:", ensName);
-
-    if (!ensName) {
+  // ENS Search
+  async function resolveENSName() {
+    if (!ensSearchName) {
       alert("Please enter an ENS name.");
       return;
     }
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const address = await provider.resolveName(ensName);
+    const address = await provider.resolveName(ensSearchName);
 
-    if (!address) {
-      alert("❌ This ENS name is not registered.");
-      setResolvedAddress("");
-      return;
+    if (address) {
+      setEnsSearchResult(address);
+    } else {
+      setEnsSearchResult("❌ ENS not found.");
     }
-
-    setResolvedAddress(address);
-    alert(`✅ You are connected to ENS.\n🔒 This address is trusted.\n\nResolved Address:\n${address}`);
   }
-
-  const contractAddress = "0xAcDF97aAD93CF81f8a85E732E982e889F73364C2";
-
-  const contractABI = [
-    "function donate() public payable",
-    "function getDonation(address donor) view returns (uint256)"
-  ];
 
   // Donate ETH
   async function donate() {
@@ -72,7 +84,7 @@ function App() {
     const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
     const tx = await contract.donate({
-      value: ethers.utils.parseEther(donationAmount)
+      value: ethers.utils.parseEther(donationAmount),
     });
     await tx.wait();
     alert(`Donation of ${donationAmount} ETH successful!`);
@@ -91,7 +103,7 @@ function App() {
       style={{
         minHeight: "100vh",
         display: "flex",
-        flexDirection: "column",
+        justifyContent: "center",
         alignItems: "center",
         background: "linear-gradient(270deg, rgb(36,203,147), rgb(26,200,151))",
         backgroundSize: "400% 400%",
@@ -99,158 +111,109 @@ function App() {
         fontFamily: "Arial, sans-serif",
         color: "white",
         textAlign: "center",
-        padding: "2rem"
+        padding: "1rem"
       }}
     >
-      <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>
-        Welcome to Transparency World 🌟
-      </h1>
+      <div
+        style={{
+          maxWidth: "500px",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center"
+        }}
+      >
+        <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>
+          Welcome to Transparency World 🌟
+        </h1>
 
-      <h2 style={{ marginBottom: "1rem" }}>Donation DApp</h2>
+        {!userRole && <RoleSelector setUserRole={setUserRole} />}
 
-      {!account && (
-        <button
-          onClick={connectWallet}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#4CAF50",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-            fontSize: "1rem"
-          }}>
-          Connect Wallet
-        </button>
-      )}
-
-      {account && (
-        <>
-          <p><strong>Connected:</strong> {account}</p>
-
-          <div style={{ marginTop: "10px" }}>
-            <button
-              onClick={disconnectWallet}
-              style={{
-                padding: "8px 12px",
-                backgroundColor: "#f44336",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                marginRight: "8px"
-              }}>
-              Disconnect Wallet
-            </button>
-
-            <button
-              onClick={changeWallet}
-              style={{
-                padding: "8px 12px",
-                backgroundColor: "#3f51b5",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer"
-              }}>
-              Change Wallet
-            </button>
-          </div>
-
-          <div style={{ margin: "20px 0" }}>
-            <input
-              type="text"
-              placeholder="Enter ENS name (e.g., vitalik.eth)"
-              value={ensName}
-              onChange={(e) => setEnsName(e.target.value)}
-              style={{
-                padding: "8px",
-                width: "250px",
-                marginRight: "8px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-                color: "#333"
-              }}
+        {userRole && (
+          <>
+            <WalletManager
+              account={account}
+              ensName={ensName}
+              connectWallet={connectWallet}
+              disconnectWallet={disconnectWallet}
+              changeWallet={changeWallet}
             />
-            <button
-              onClick={resolveENS}
-              style={{
-                padding: "8px 12px",
-                backgroundColor: "#2196F3",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer"
-              }}>
-              Resolve ENS
-            </button>
-          </div>
 
-          {resolvedAddress && (
-            <p><strong>Resolved Address:</strong> {resolvedAddress}</p>
-          )}
+            {account && (
+              <>
+                <ENSResolver
+                  ensSearchName={ensSearchName}
+                  setEnsSearchName={setEnsSearchName}
+                  resolveENSName={resolveENSName}
+                  ensSearchResult={ensSearchResult}
+                />
 
-          <div style={{ margin: "10px 0" }}>
-            <input
-              type="text"
-              placeholder="Enter donation amount in ETH"
-              value={donationAmount}
-              onChange={(e) => setDonationAmount(e.target.value)}
-              style={{
-                padding: "8px",
-                width: "150px",
-                marginRight: "8px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-                color: "#333"
-              }}
-            />
-            <button
-              onClick={donate}
-              style={{
-                padding: "8px 12px",
-                backgroundColor: "#FF9800",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer"
-              }}>
-              Donate ETH
-            </button>
-          </div>
+                {userRole === "donor" && (
+                  <>
+                    <DonationSection
+                      donationAmount={donationAmount}
+                      setDonationAmount={setDonationAmount}
+                      donate={donate}
+                      getBalance={getBalance}
+                      donationBalance={donationBalance}
+                    />
 
-          <button
-            onClick={getBalance}
-            style={{
-              padding: "8px 12px",
-              backgroundColor: "#9C27B0",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer"
-            }}>
-            Check My Donation
-          </button>
+                    <TransactionHistory />
 
-          {donationBalance && (
-            <p style={{ fontSize: "1.2rem", marginTop: "10px" }}>
-              🎉 <strong> Your Total Donation:</strong> {donationBalance} ETH
-            </p>
-          )}
-        </>
-      )}
+                    {!showKYC && (
+                      <button
+                        onClick={() => setShowKYC(true)}
+                        style={{
+                          padding: "10px 20px",
+                          backgroundColor: "#2196F3",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                          marginTop: "10px",
+                        }}
+                      >
+                        Start KYC
+                      </button>
+                    )}
+                    {showKYC && <KYCSection />}
+                  </>
+                )}
 
-      {/* Animation Keyframes */}
-      <style>{`
-        @keyframes gradientBG {
-          0% {background-position: 0% 50%;}
-          50% {background-position: 100% 50%;}
-          100% {background-position: 0% 50%;}
-        }
-      `}</style>
+                {userRole === "needy" && (
+                  <>
+                    {!showKYC && (
+                      <button
+                        onClick={() => setShowKYC(true)}
+                        style={{
+                          padding: "10px 20px",
+                          backgroundColor: "#2196F3",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                          marginTop: "10px",
+                        }}
+                      >
+                        Start KYC
+                      </button>
+                    )}
+                    {showKYC && <KYCSection />}
+                  </>
+                )}
+              </>
+            )}
+          </>
+        )}
 
-      <TransactionHistory />
-      <KYCForm />
+        <style>{`
+          @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+          }
+        `}</style>
+      </div>
     </div>
   );
 }
