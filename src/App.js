@@ -234,7 +234,7 @@ function App() {
 
           {donationBalance && (
             <p style={{ fontSize: "1.2rem", marginTop: "10px" }}>
-              🎉 <strong>Your Total Donation:</strong> {donationBalance} ETH
+              🎉 <strong> Your Total Donation:</strong> {donationBalance} ETH
             </p>
           )}
         </>
