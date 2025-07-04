@@ -124,7 +124,7 @@ function App() {
         }}
       >
         <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>
-          Welcome to Transparency World 🌟
+          Welcome to Transparency World Via Blockchain Making World a Better Place 
         </h1>
 
         {!userRole && <RoleSelector setUserRole={setUserRole} />}
