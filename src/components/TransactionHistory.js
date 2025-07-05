@@ -37,20 +37,61 @@ function TransactionHistory() {
       {events.length === 0 ? (
         <p>No donations yet.</p>
       ) : (
-        <table style={{ width: "100%", color: "white", borderCollapse: "collapse" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th style={{ borderBottom: "1px solid #ddd" }}>Donor</th>
-              <th style={{ borderBottom: "1px solid #ddd" }}>Amount (ETH)</th>
-              <th style={{ borderBottom: "1px solid #ddd" }}>Time</th>
+              <th style={{
+                borderBottom: "1px solid #ddd",
+                padding: "8px",
+                background: "#f1f1f1",
+                color: "green"
+              }}>Donor</th>
+              <th style={{
+                borderBottom: "1px solid #ddd",
+                padding: "8px",
+                background: "#f1f1f1",
+                color: "red"
+              }}>Amount (ETH)</th>
+              <th style={{
+                borderBottom: "1px solid #ddd",
+                padding: "8px",
+                background: "#f1f1f1",
+                color: "green"
+              }}>Time</th>
             </tr>
           </thead>
           <tbody>
             {events.map((event, idx) => (
               <tr key={idx}>
-                <td>{event.donor}</td>
-                <td>{event.amount}</td>
-                <td>{event.time}</td>
+                <td style={{
+                  border: "1px solid #ccc",
+                  padding: "8px",
+                  textAlign: "center",
+                  background: "#ffffff",
+                  color: "green",
+                  wordBreak: "break-all"
+                }}>
+                  {event.donor}
+                </td>
+                <td style={{
+                  border: "1px solid #ccc",
+                  padding: "8px",
+                  textAlign: "center",
+                  background: "#ffffff",
+                  color: "red",
+                  fontWeight: "bold"
+                }}>
+                  {event.amount}
+                </td>
+                <td style={{
+                  border: "1px solid #ccc",
+                  padding: "8px",
+                  textAlign: "center",
+                  background: "#ffffff",
+                  color: "green"
+                }}>
+                  {event.time}
+                </td>
               </tr>
             ))}
           </tbody>

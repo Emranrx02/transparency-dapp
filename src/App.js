@@ -22,12 +22,16 @@ function App() {
         fontFamily: "Arial, sans-serif",
         color: "white",
         textAlign: "center",
-        padding: "2rem",
+        padding: "1rem",
       }}
     >
-      <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>
-        Welcome to Transparency World 🌟
-        <br />
+      <h1 style={{
+        fontSize: "1.5rem",
+        marginBottom: "1rem",
+        lineHeight: "1.4",
+        maxWidth: "90%"
+      }}>
+        Welcome to Transparency World 🌟<br/>
         Via Blockchain Making the Better World
       </h1>
 
@@ -36,7 +40,13 @@ function App() {
       )}
 
       {role && (
-        <>
+        <div style={{
+          width: "100%",
+          maxWidth: "500px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "1rem"
+        }}>
           <WalletManager account={account} setAccount={setAccount} />
 
           {account && (
@@ -45,7 +55,7 @@ function App() {
               {role === "needy" && <KYCSection />}
             </>
           )}
-        </>
+        </div>
       )}
 
       <style>{`

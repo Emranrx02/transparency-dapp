@@ -64,18 +64,24 @@ function DonationSection({ account }) {
   }
 
   return (
-    <div style={{ marginTop: "20px" }}>
+    <div style={{ marginTop: "20px", width: "100%", maxWidth: "800px" }}>
       {/* ENS Resolve */}
-      <div style={{ marginBottom: "10px" }}>
+      <div style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "10px",
+        marginBottom: "10px",
+        justifyContent: "center"
+      }}>
         <input
           type="text"
           placeholder="Search ENS name (e.g., vitalik.eth)"
           value={ensName}
           onChange={(e) => setEnsName(e.target.value)}
           style={{
-            padding: "8px",
-            width: "220px",
-            marginRight: "8px",
+            padding: "10px",
+            flex: "1",
+            minWidth: "220px",
             borderRadius: "4px",
             border: "1px solid #ccc",
             color: "#333"
@@ -84,34 +90,41 @@ function DonationSection({ account }) {
         <button
           onClick={resolveENS}
           style={{
-            padding: "8px 12px",
+            padding: "10px 16px",
             backgroundColor: "#2196F3",
             color: "white",
             border: "none",
             borderRadius: "4px",
-            cursor: "pointer"
+            cursor: "pointer",
+            flexShrink: 0
           }}
         >
           Resolve ENS
         </button>
       </div>
       {resolvedAddress && (
-        <p>
+        <p style={{ wordBreak: "break-all" }}>
           <strong>Resolved Address:</strong> {resolvedAddress}
         </p>
       )}
 
       {/* Donation Input */}
-      <div style={{ marginTop: "10px" }}>
+      <div style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "10px",
+        marginTop: "10px",
+        justifyContent: "center"
+      }}>
         <input
           type="text"
           placeholder="Enter donation amount in ETH"
           value={donationAmount}
           onChange={(e) => setDonationAmount(e.target.value)}
           style={{
-            padding: "8px",
-            width: "150px",
-            marginRight: "8px",
+            padding: "10px",
+            flex: "1",
+            minWidth: "150px",
             borderRadius: "4px",
             border: "1px solid #ccc",
             color: "#333"
@@ -120,12 +133,13 @@ function DonationSection({ account }) {
         <button
           onClick={donate}
           style={{
-            padding: "8px 12px",
+            padding: "10px 16px",
             backgroundColor: "#FF9800",
             color: "white",
             border: "none",
             borderRadius: "4px",
-            cursor: "pointer"
+            cursor: "pointer",
+            flexShrink: 0
           }}
         >
           Donate ETH
@@ -133,25 +147,28 @@ function DonationSection({ account }) {
       </div>
 
       {/* Check Donation */}
-      <button
-        onClick={getBalance}
-        style={{
-          padding: "8px 12px",
-          backgroundColor: "#9C27B0",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          marginTop: "10px"
-        }}
-      >
-        Check My Donation
-      </button>
-      {donationBalance && (
-        <p style={{ marginTop: "10px" }}>
-          🎉 <strong>Your Total Donation:</strong> {donationBalance}
-        </p>
-      )}
+      <div style={{ textAlign: "center", marginTop: "10px" }}>
+        <button
+          onClick={getBalance}
+          style={{
+            padding: "10px 16px",
+            backgroundColor: "#9C27B0",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            width: "100%",
+            maxWidth: "250px"
+          }}
+        >
+          Check My Donation
+        </button>
+        {donationBalance && (
+          <p style={{ marginTop: "10px" }}>
+            🎉 <strong>Your Total Donation:</strong> {donationBalance}
+          </p>
+        )}
+      </div>
 
       {/* Transaction History */}
       <TransactionHistory />
