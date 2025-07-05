@@ -1,70 +1,115 @@
-# Getting Started with Create React App
+# 🌟 Transparency DApp - Decentralized Donation and KYC Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to **Transparency World**, a decentralized application built with **React** and **Ethereum smart contracts**. This project empowers transparency and trust in donations by leveraging blockchain technology.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+✅ **Connect Wallet**
+- Users can securely connect their Ethereum wallet (e.g., MetaMask).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+✅ **Role Selection**
+- Choose between:
+  - **I am Needy**: Verify identity and submit KYC.
+  - **I want to Donate**: Send donations transparently.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+✅ **ENS Resolution**
+- Lookup ENS names to Ethereum addresses.
 
-### `npm test`
+✅ **Donation**
+- Donate ETH directly to the smart contract.
+- See your total donated amount and its USD equivalent.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+✅ **Transaction History**
+- View all donation events stored on the blockchain.
+- All records are immutable and verifiable.
 
-### `npm run build`
+✅ **Address Donation Insight**
+- Search any Ethereum address to see:
+  - Live balance.
+  - Contract donations with date and transaction hash.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+✅ **KYC Form**
+- Needy users can submit identity information and documents for verification.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+✅ **Responsive Design**
+- Mobile-friendly layout and styling.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## ⚙️ Technologies Used
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Frontend:** React.js, Ethers.js
+- **Smart Contract:** Solidity (deployed on Sepolia Testnet)
+- **Styles:** Inline CSS with responsive adjustments
+- **APIs:**
+  - CoinGecko (ETH/USD price)
+  - Etherscan (optional for additional transaction data)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 📂 Project Structure
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
+src/
+components/
+AddressInsight.js      # ENS and donation lookup
+DonationSection.js     # Donation logic and UI
+KYCForm.js             # KYC submission form
+KYCSection.js          # KYC container
+RoleSelector.js        # Role selection buttons
+TransactionHistory.js  # Donation history table
+WalletManager.js       # Connect/disconnect wallet
+App.js                   # Main application logic
+App.css                  # Global styles
+contracts/
+DonationContract.sol     # Solidity smart contract
 
-## Learn More
+## 🏗️ How to Run
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1️⃣ **Install dependencies:**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+npm install
 
-### Code Splitting
+2️⃣ **Start the development server:**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+npm start
 
-### Analyzing the Bundle Size
+3️⃣ **Build for production:**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+npm run build
 
-### Making a Progressive Web App
+4️⃣ **Deploy:**
+- Recommended: Vercel or Netlify
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## 📜 Smart Contract Info
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- **Address:** `0xac45090D82da90c47a8fda64EA1676178c26b686`
+- **Network:** Sepolia Testnet
+- **Functions:**
+  - `donate()`: Accepts ETH donations
+  - `getDonation(address)`: Returns total donated amount
+  - `DonationReceived`: Event emitted on each donation
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 💡 Future Enhancements
 
-### `npm run build` fails to minify
+- Email notifications on KYC approval
+- Detailed donation analytics
+- Multi-network support (Goerli, Mainnet)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## 🙏 Credits
+
+Made with ❤️ by Emran haque - https://emranhaque.com
+
+---
+
+## 📧 Contact
+
+If you have any questions, feel free to open an issue or contact me.
