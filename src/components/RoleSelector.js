@@ -1,31 +1,32 @@
 import React from "react";
 
-function RoleSelector({ setUserRole }) {
+function RoleSelector({ setRole }) {
   return (
-    <div style={{ marginTop: "20px" }}>
+    <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
       <button
-        onClick={() => setUserRole("needy")}
+        onClick={() => setRole("needy")}
         style={{
           padding: "12px 20px",
-          marginRight: "10px",
           backgroundColor: "#2196F3",
           color: "white",
           border: "none",
-          borderRadius: "4px",
-          cursor: "pointer"
+          borderRadius: "5px",
+          cursor: "pointer",
+          fontSize: "1rem"
         }}
       >
         I am Needy
       </button>
       <button
-        onClick={() => setUserRole("donor")}
+        onClick={() => setRole("donor")}
         style={{
           padding: "12px 20px",
           backgroundColor: "#4CAF50",
           color: "white",
           border: "none",
-          borderRadius: "4px",
-          cursor: "pointer"
+          borderRadius: "5px",
+          cursor: "pointer",
+          fontSize: "1rem"
         }}
       >
         I want to Donate

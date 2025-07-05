@@ -1,9 +1,108 @@
-import React from "react";
+import React, { useState } from "react";
+import { ethers } from "ethers";
+import TransactionHistory from "./TransactionHistory";
+import AddressInsight from "./AddressInsight";
 
-function DonationSection({ donationAmount, setDonationAmount, donate, getBalance, donationBalance }) {
+function DonationSection({ account }) {
+  const [ensName, setEnsName] = useState("");
+  const [resolvedAddress, setResolvedAddress] = useState("");
+  const [donationAmount, setDonationAmount] = useState("");
+  const [donationBalance, setDonationBalance] = useState("");
+
+  const contractAddress = "0xac45090D82da90c47a8fda64EA1676178c26b686";
+  const contractABI = [
+    "function donate() public payable",
+    "function getDonation(address donor) view returns (uint256)"
+  ];
+
+  async function resolveENS() {
+    if (!ensName) {
+      alert("Please enter an ENS name.");
+      return;
+    }
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const address = await provider.resolveName(ensName);
+    if (!address) {
+      alert("❌ ENS not found.");
+      setResolvedAddress("");
+      return;
+    }
+    setResolvedAddress(address);
+  }
+
+  async function donate() {
+    if (!donationAmount) {
+      alert("Please enter an amount.");
+      return;
+    }
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, contractABI, signer);
+    const tx = await contract.donate({
+      value: ethers.utils.parseEther(donationAmount)
+    });
+    await tx.wait();
+    alert(`Donation of ${donationAmount} ETH successful!`);
+  }
+
+  async function fetchEthPriceInUSD() {
+    const response = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+    );
+    const data = await response.json();
+    return data.ethereum.usd;
+  }
+
+  async function getBalance() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const contract = new ethers.Contract(contractAddress, contractABI, provider);
+    const balance = await contract.getDonation(account);
+    const ethAmount = ethers.utils.formatEther(balance);
+    const ethPrice = await fetchEthPriceInUSD();
+    const usdAmount = (parseFloat(ethAmount) * ethPrice).toFixed(2);
+    setDonationBalance(`${ethAmount} ETH ($${usdAmount})`);
+  }
+
   return (
     <div style={{ marginTop: "20px" }}>
-      <div>
+      {/* ENS Resolve */}
+      <div style={{ marginBottom: "10px" }}>
+        <input
+          type="text"
+          placeholder="Search ENS name (e.g., vitalik.eth)"
+          value={ensName}
+          onChange={(e) => setEnsName(e.target.value)}
+          style={{
+            padding: "8px",
+            width: "220px",
+            marginRight: "8px",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
+            color: "#333"
+          }}
+        />
+        <button
+          onClick={resolveENS}
+          style={{
+            padding: "8px 12px",
+            backgroundColor: "#2196F3",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer"
+          }}
+        >
+          Resolve ENS
+        </button>
+      </div>
+      {resolvedAddress && (
+        <p>
+          <strong>Resolved Address:</strong> {resolvedAddress}
+        </p>
+      )}
+
+      {/* Donation Input */}
+      <div style={{ marginTop: "10px" }}>
         <input
           type="text"
           placeholder="Enter donation amount in ETH"
@@ -32,6 +131,8 @@ function DonationSection({ donationAmount, setDonationAmount, donate, getBalance
           Donate ETH
         </button>
       </div>
+
+      {/* Check Donation */}
       <button
         onClick={getBalance}
         style={{
@@ -47,10 +148,14 @@ function DonationSection({ donationAmount, setDonationAmount, donate, getBalance
         Check My Donation
       </button>
       {donationBalance && (
-        <p style={{ fontSize: "1.2rem", marginTop: "10px" }}>
-          🎉 <strong>Your Total Donation:</strong> {donationBalance} ETH
+        <p style={{ marginTop: "10px" }}>
+          🎉 <strong>Your Total Donation:</strong> {donationBalance}
         </p>
       )}
+
+      {/* Transaction History */}
+      <TransactionHistory />
+      <AddressInsight />
     </div>
   );
 }

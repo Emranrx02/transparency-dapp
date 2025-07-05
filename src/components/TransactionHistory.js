@@ -1,110 +1,56 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { ethers } from "ethers";
 
 function TransactionHistory() {
-  const [address, setAddress] = useState("");
-  const [txs, setTxs] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [events, setEvents] = useState([]);
 
-  const apiKey = "E9YTVSG375QXS9SGQ4VH5MZHW8E5RIBHT3"; // এখানে তোমার Etherscan API Key বসাও
+  const contractAddress = "0xac45090D82da90c47a8fda64EA1676178c26b686";
+  const contractABI = React.useMemo(() => [
+    "event DonationReceived(address indexed donor, uint256 amount, uint256 timestamp)"
+  ], []);
 
-  const fetchTransactions = async () => {
-    if (!address) {
-      setError("Please enter an address.");
-      return;
+  useEffect(() => {
+    async function fetchEvents() {
+      if (!window.ethereum) return;
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const contract = new ethers.Contract(contractAddress, contractABI, provider);
+
+      const filter = contract.filters.DonationReceived();
+      const logs = await contract.queryFilter(filter, 0, "latest");
+
+      const parsedLogs = logs.map(log => ({
+        donor: log.args.donor,
+        amount: ethers.utils.formatEther(log.args.amount),
+        time: new Date(log.args.timestamp.toNumber() * 1000).toLocaleString()
+      }));
+
+      setEvents(parsedLogs.reverse());
     }
 
-    setLoading(true);
-    setError("");
-    setTxs([]);
-
-    try {
-        const response = await fetch(
-            `https://api-sepolia.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`
-          );
-      const data = await response.json();
-
-      if (data.status !== "1") {
-        setError("No transactions found or invalid address.");
-        setLoading(false);
-        return;
-      }
-
-      setTxs(data.result);
-    } catch (err) {
-      console.error(err);
-      setError("Error fetching transactions.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchEvents();
+  }, [contractABI]);
 
   return (
-    <div style={{ padding: "1rem", maxWidth: "500px", margin: "auto" }}>
-      <h2>Transaction History</h2>
-      <input
-        type="text"
-        placeholder="Enter Ethereum Address"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        style={{ width: "100%", padding: "10px", marginRight: "8px" }}
-      />
-
-      <button
-        onClick={fetchTransactions}
-        style={{
-          padding: "8px 12px",
-          backgroundColor: "#2196F3",
-          color: "white",
-          border: "none",
-          cursor: "pointer"
-        }}
-        
-      >
-        Fetch History
-      </button>
-
-      {error && (
-        <p style={{ color: "red", marginTop: "10px" }}>{error}</p>
-      )}
-
-      {loading && (
-        <p style={{ marginTop: "10px" }}>Loading transactions...</p>
-      )}
-
-      {txs.length > 0 && (
-        <table
-          style={{
-            width: "100%",
-            marginTop: "20px",
-            borderCollapse: "collapse"
-          }}
-        >
+    <div style={{ marginTop: "10px" }}>
+      <h3>Donation History</h3>
+      {events.length === 0 ? (
+        <p>No donations yet.</p>
+      ) : (
+        <table style={{ width: "100%", color: "white", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Hash</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Date</th>
-              <th style={{ border: "1px solid #ccc", padding: "8px" }}>Value (ETH)</th>
+              <th style={{ borderBottom: "1px solid #ddd" }}>Donor</th>
+              <th style={{ borderBottom: "1px solid #ddd" }}>Amount (ETH)</th>
+              <th style={{ borderBottom: "1px solid #ddd" }}>Time</th>
             </tr>
           </thead>
           <tbody>
-            {txs.slice(0, 10).map((tx) => (
-              <tr key={tx.hash}>
-                <td style={{ border: "1px solid #ccc", padding: "8px", wordBreak: "break-all" }}>
-                  <a
-                    href={`https://etherscan.io/tx/${tx.hash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {tx.hash.slice(0, 12)}...
-                  </a>
-                </td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                  {new Date(tx.timeStamp * 1000).toLocaleString()}
-                </td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                  {(Number(tx.value) / 1e18).toFixed(4)}
-                </td>
+            {events.map((event, idx) => (
+              <tr key={idx}>
+                <td>{event.donor}</td>
+                <td>{event.amount}</td>
+                <td>{event.time}</td>
               </tr>
             ))}
           </tbody>

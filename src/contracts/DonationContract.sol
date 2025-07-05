@@ -5,7 +5,7 @@ contract DonationContract {
     address public owner;
     mapping(address => uint256) public donations;
 
-    event DonationReceived(address indexed donor, uint256 amount);
+    event DonationReceived(address indexed donor, uint256 amount, uint256 timestamp);
 
     constructor(address _owner) {
         owner = _owner;
@@ -15,7 +15,7 @@ contract DonationContract {
         require(msg.value > 0, "Must send some ether");
         donations[msg.sender] += msg.value;
         payable(owner).transfer(msg.value);
-        emit DonationReceived(msg.sender, msg.value);
+        emit DonationReceived(msg.sender, msg.value, block.timestamp);
     }
 
     function getDonation(address donor) public view returns (uint256) {

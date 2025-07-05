@@ -1,8 +1,23 @@
 import React from "react";
 
-function WalletManager({ account, ensName, connectWallet, disconnectWallet, changeWallet }) {
+function WalletManager({ account, setAccount }) {
+  async function connectWallet() {
+    if (window.ethereum) {
+      const [selectedAccount] = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      setAccount(selectedAccount);
+    } else {
+      alert("Please install MetaMask!");
+    }
+  }
+
+  function disconnectWallet() {
+    setAccount("");
+  }
+
   return (
-    <>
+    <div style={{ marginTop: "20px" }}>
       {!account ? (
         <button
           onClick={connectWallet}
@@ -13,8 +28,7 @@ function WalletManager({ account, ensName, connectWallet, disconnectWallet, chan
             border: "none",
             borderRadius: "5px",
             cursor: "pointer",
-            fontSize: "1rem",
-            marginTop: "20px"
+            fontSize: "1rem"
           }}
         >
           Connect Wallet
@@ -22,40 +36,23 @@ function WalletManager({ account, ensName, connectWallet, disconnectWallet, chan
       ) : (
         <>
           <p><strong>Connected:</strong> {account}</p>
-          {ensName && <p><strong>ENS:</strong> {ensName}</p>}
-
-          <div style={{ marginTop: "10px" }}>
-            <button
-              onClick={disconnectWallet}
-              style={{
-                padding: "8px 12px",
-                backgroundColor: "#f44336",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                marginRight: "8px"
-              }}
-            >
-              Disconnect
-            </button>
-            <button
-              onClick={changeWallet}
-              style={{
-                padding: "8px 12px",
-                backgroundColor: "#3f51b5",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer"
-              }}
-            >
-              Change Wallet
-            </button>
-          </div>
+          <button
+            onClick={disconnectWallet}
+            style={{
+              padding: "8px 12px",
+              backgroundColor: "#f44336",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              marginTop: "5px"
+            }}
+          >
+            Disconnect
+          </button>
         </>
       )}
-    </>
+    </div>
   );
 }
 
