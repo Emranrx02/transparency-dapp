@@ -31,7 +31,7 @@ function App() {
         lineHeight: "1.4",
         maxWidth: "90%"
       }}>
-        Welcome to Transparency World 🌟<br/>
+        Welcome to Transparency World <br/>
         Via Blockchain Making the Better World
       </h1>
 

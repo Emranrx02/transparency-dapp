@@ -28,7 +28,7 @@ function ENSResolver({ ensSearchName, setEnsSearchName, resolveENSName, ensSearc
           cursor: "pointer"
         }}
       >
-        Resolve ENS
+        Search ENS Name
       </button>
       {ensSearchResult && (
         <p style={{ marginTop: "10px", fontSize: "1rem" }}>
